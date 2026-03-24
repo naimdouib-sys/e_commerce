@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - ECommerce Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">🛍️ ECommerce Store</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html"><span class="cart-icon">🛒</span> Cart <span class="cart-count">0</span></a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="admin-login.html" style="color: #ff6b6b;">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail-section">
+        <div class="container">
+            <a href="shop.html" class="back-link">← Back to Shop</a>
+            
+            <div class="product-detail-container" id="productDetail">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 ECommerce Store. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load product details
+        async function loadProductDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) {
+                document.getElementById('productDetail').innerHTML = '<p>Product not found.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('api/get-products.php');
+                const products = await response.json();
+                const product = products.find(p => p.id == productId);
+
+                if (!product) {
+                    document.getElementById('productDetail').innerHTML = '<p>Product not found.</p>';
+                    return;
+                }
+
+                const detailContainer = document.getElementById('productDetail');
+                detailContainer.innerHTML = `
+                    <div class="detail-layout">
+                        <div class="detail-image">
+                            <img src="uploads/${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/400'">
+                        </div>
+                        <div class="detail-info">
+                            <h1>${product.name}</h1>
+                            <p class="detail-price">$${parseFloat(product.price).toFixed(2)}</p>
+                            <div class="detail-rating">
+                                <span>⭐⭐⭐⭐⭐</span> (127 reviews)
+                            </div>
+                            <p class="detail-description">${product.description}</p>
+                            
+                            <div class="quantity-selector">
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" id="quantity" min="1" max="100" value="1">
+                            </div>
+
+                            <div class="detail-buttons">
+                                <button class="btn btn-primary" onclick="addToCartFromDetail(${product.id}, '${product.name}', ${product.price})">
+                                    Add to Cart
+                                </button>
+                                <button class="btn btn-outline" onclick="addToWishlist(${product.id})">
+                                    ❤️ Add to Wishlist
+                                </button>
+                            </div>
+
+                            <div class="detail-features">
+                                <h3>Features</h3>
+                                <ul>
+                                    <li>✓ Free Shipping on orders over $50</li>
+                                    <li>✓ 30-Day Money Back Guarantee</li>
+                                    <li>✓ 1-Year Warranty</li>
+                                    <li>✓ 24/7 Customer Support</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading product:', error);
+                document.getElementById('productDetail').innerHTML = '<p>Error loading product.</p>';
+            }
+        }
+
+        function addToCartFromDetail(id, name, price) {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            for (let i = 0; i < quantity; i++) {
+                addToCart(id, name, price);
+            }
+            alert(`${quantity} item(s) added to cart!`);
+        }
+
+        function addToWishlist(productId) {
+            alert('Added to wishlist! (Feature coming soon)');
+        }
+
+        loadProductDetail();
+    </script>
+</body>
+</html>

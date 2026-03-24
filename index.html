@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECommerce Store - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">🛍️ ECommerce Store</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html"><span class="cart-icon">🛒</span> Cart <span class="cart-count">0</span></a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="admin-login.html" style="color: #ff6b6b;">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to ECommerce Store</h1>
+            <p>Discover amazing products at great prices</p>
+            <a href="shop.html" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-section">
+        <h2>Featured Products</h2>
+        <div class="products-grid" id="featuredProducts">
+            <!-- Products will be loaded here by JavaScript -->
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <h2>Why Choose Us?</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="about-icon">🚚</div>
+                <h3>Fast Shipping</h3>
+                <p>Get your products delivered quickly to your doorstep</p>
+            </div>
+            <div class="about-card">
+                <div class="about-icon">💳</div>
+                <h3>Secure Payment</h3>
+                <p>Safe and secure payment options for your peace of mind</p>
+            </div>
+            <div class="about-card">
+                <div class="about-icon">⭐</div>
+                <h3>Quality Products</h3>
+                <p>Hand-selected premium products at competitive prices</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 ECommerce Store. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load featured products on homepage
+        async function loadFeaturedProducts() {
+            try {
+                const response = await fetch('api/get-products.php');
+                const products = await response.json();
+                const featuredContainer = document.getElementById('featuredProducts');
+                
+                // Show only first 3 products
+                products.slice(0, 3).forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <img src="uploads/${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200'">
+                        <h3>${product.name}</h3>
+                        <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
+                        <p class="description">${product.description.substring(0, 50)}...</p>
+                        <button class="btn btn-small" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
+                            Add to Cart
+                        </button>
+                        <a href="product-detail.html?id=${product.id}" class="btn btn-outline btn-small">View Details</a>
+                    `;
+                    featuredContainer.appendChild(productCard);
+                });
+            } catch (error) {
+                console.error('Error loading featured products:', error);
+            }
+        }
+
+        loadFeaturedProducts();
+    </script>
+</body>
+</html>

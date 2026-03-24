@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - ECommerce Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">🛍️ ECommerce Store</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html" class="active">Shop</a></li>
+                <li><a href="cart.html"><span class="cart-icon">🛒</span> Cart <span class="cart-count">0</span></a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="admin-login.html" style="color: #ff6b6b;">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Shop Section -->
+    <section class="shop-section">
+        <div class="shop-container">
+            <!-- Sidebar with filters -->
+            <aside class="shop-sidebar">
+                <div class="filter-box">
+                    <h3>Search Products</h3>
+                    <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+                </div>
+
+                <div class="filter-box">
+                    <h3>Sort By</h3>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Main Products Area -->
+            <main class="shop-main">
+                <h1>Shop Products</h1>
+                <div class="products-grid" id="productsContainer">
+                    <!-- Products will be loaded here -->
+                </div>
+                <div id="noProducts" class="no-products" style="display: none;">
+                    <p>No products found. Try adjusting your search.</p>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 ECommerce Store. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        let allProducts = [];
+
+        // Load all products
+        async function loadProducts() {
+            try {
+                const response = await fetch('api/get-products.php');
+                allProducts = await response.json();
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            const noProducts = document.getElementById('noProducts');
+            
+            container.innerHTML = '';
+
+            if (products.length === 0) {
+                noProducts.style.display = 'block';
+                return;
+            }
+
+            noProducts.style.display = 'none';
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <img src="uploads/${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200'">
+                    <h3>${product.name}</h3>
+                    <p class="price">$${parseFloat(product.price).toFixed(2)}</p>
+                    <p class="description">${product.description.substring(0, 60)}...</p>
+                    <button class="btn btn-small" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
+                        Add to Cart
+                    </button>
+                    <a href="product-detail.html?id=${product.id}" class="btn btn-outline btn-small">View Details</a>
+                `;
+                container.appendChild(productCard);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allProducts.filter(product =>
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            );
+            displayProducts(filtered);
+        });
+
+        // Sort functionality
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            let sorted = [...allProducts];
+            const sortType = e.target.value;
+
+            switch(sortType) {
+                case 'price-low':
+                    sorted.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    sorted.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                default:
+                    sorted.sort((a, b) => b.id - a.id);
+            }
+
+            displayProducts(sorted);
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
