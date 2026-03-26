@@ -46,11 +46,3 @@ CREATE TABLE IF NOT EXISTS order_items (
 INSERT INTO users (name, email, password) VALUES 
 ('Admin', 'naim.douib@gmail.com', '$2y$10$bkjjcqKGX0QrD7mqGxYhTe9fRWAjH.lYvZFJQwN8VbOKPz8GQ4mZa');
 
--- Sample Products
-INSERT INTO products (name, price, description, image) VALUES
-('Wireless Headphones', 49.99, 'Premium quality wireless headphones with noise cancellation', 'product1.jpg'),
-('Smart Watch', 199.99, 'Feature-rich smartwatch with health tracking', 'product2.jpg'),
-('USB-C Cable', 12.99, 'Fast charging USB-C cable with durable design', 'product3.jpg'),
-('Phone Case', 19.99, 'Protective phone case with premium material', 'product4.jpg'),
-('Screen Protector', 9.99, 'Tempered glass screen protector for durability', 'product5.jpg'),
-('Power Bank', 34.99, '20000mAh power bank with fast charging', 'product6.jpg');
